@@ -1,14 +1,14 @@
-name: Update data and deploy Pages
+name: Deploy Pages
 
+# 데이터 수집(fetch.ps1)은 eiass.go.kr이 해외 IP를 차단하기 때문에 반드시 국내 PC에서 실행해야 합니다.
+# 이 워크플로는 로컬 PC가 push한 site/ 폴더를 그대로 GitHub Pages에 배포만 합니다.
 on:
   push:
     branches: [main]
-  schedule:
-    - cron: "0 22 * * *"   # 매일 UTC 22:00 (KST 07:00)에 자동 갱신
   workflow_dispatch: {}
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -17,22 +17,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  update-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Fetch latest EIASS data
-        shell: pwsh
-        run: ./fetch.ps1 -NoOpen
-
-      - name: Commit updated data (if changed)
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/latest.json data/new_log.json site/index.html
-          git diff --cached --quiet || git commit -m "chore: EIASS 채석/토석채취 사업 데이터 갱신"
-          git push
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

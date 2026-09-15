@@ -1,0 +1,35 @@
+{
+  "sessionId": "academy-timetable-20260915",
+  "prdType": "product",
+  "slug": "kids-activity-schedule",
+  "startedAt": "2026-09-15T00:00:00Z",
+  "lastUpdatedAt": "2026-09-15T00:00:00Z",
+  "currentCategory": "Done",
+  "completedCategories": ["Problem & Context", "Users & Customers", "Solution & Features", "Technical Implementation", "Business & Value", "UX & Design", "Risks & Concerns", "Testing & Quality"],
+  "prdOutputPath": "docs/prd/prd-kids-activity-schedule.md",
+  "answers": {
+    "Problem & Context": {
+      "primary_users": "학생",
+      "current_method": "종이/화이트보드",
+      "trigger": "시간 충돌/실수 반복",
+      "primary_goal": "시간표 자동 생성/충돌 방지"
+    },
+    "Users & Customers": {
+      "age_range": "초등 저학년 (8~10세)",
+      "access_method": "학생 본인 기기로 직접 접속",
+      "scale": "해당 없음 (개인/가정용으로 방향 전환)",
+      "product_direction": "하나의 학원 내부 반/강사 관리 도구가 아니라, 한 아이의 여러 학원·활동을 요일별로 모아 보여주는 개인/가정용 통합 시간표",
+      "school_dismissal_time": "포함 여부 미정 (No preference)",
+      "color_coding": "활동/학원별로 자동 색상 배정",
+      "sharing": "여러 보호자(부모 등)가 함께 보고 수정 가능해야 함",
+      "reference_image": "/root/.claude/uploads/b59484d9-34c6-5418-b298-5391b88d1b06/aa1fe53e-image.jpg"
+    },
+    "Solution & Features": {
+      "num_children": "No preference (default: 형제자매 다중 지원, Post-MVP)",
+      "mvp_features": "No preference (default: 주간 그리드뷰, 활동 CRUD, 반복 일정, 중복 경고 모두 채택)",
+      "notifications": "필요 없음",
+      "sharing_method": "No preference (Open Question으로 이관)"
+    }
+  },
+  "initialPrompt": "어린이 학원 시간표 만들어보다 prd형태로 → 사용자 제공 참고 이미지를 통해 '한 아이의 여러 학원/활동을 요일별로 모아 보여주는 개인·가정용 통합 시간표' 서비스로 방향 확정"
+}

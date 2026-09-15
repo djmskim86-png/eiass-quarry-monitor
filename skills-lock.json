@@ -6,6 +6,12 @@
       "sourceType": "github",
       "skillPath": "skills/frontend-design/SKILL.md",
       "computedHash": "89496d5dd00f4810205f351759594fc2742bf8eea85a2f2b2d1de59f4bd91576"
+    },
+    "prd-interview": {
+      "source": "mwguerra/claude-code-plugins",
+      "sourceType": "github",
+      "skillPath": "prd-builder/skills/prd-interview/SKILL.md",
+      "computedHash": "b08fca9d8bbfe1a87cb14668ecdc26508722e37d21a4a446064c6b0b804fb1a3"
     }
   }
 }

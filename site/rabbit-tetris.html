@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>토끼 테트리스 🐰</title>
+<style>
+  :root {
+    --bg: #fff6ea;
+    --panel: #ffffff;
+    --ink: #5b4636;
+    --accent: #ff8fab;
+    --carrot: #ff9f43;
+    --board-bg: #fdece0;
+    --grid-line: #f1d9c7;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: linear-gradient(180deg, #fff6ea 0%, #ffe9d6 100%);
+    font-family: "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    color: var(--ink);
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 16px;
+  }
+  .app {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-start;
+    justify-content: center;
+    max-width: 720px;
+  }
+  h1 {
+    width: 100%;
+    text-align: center;
+    font-size: 28px;
+    margin: 0 0 4px;
+    letter-spacing: 1px;
+  }
+  .subtitle {
+    width: 100%;
+    text-align: center;
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: #a98a72;
+  }
+  .board-wrap {
+    background: var(--panel);
+    border-radius: 18px;
+    padding: 14px;
+    box-shadow: 0 10px 30px rgba(120, 80, 40, 0.15);
+    position: relative;
+  }
+  canvas#board {
+    background: var(--board-bg);
+    border-radius: 10px;
+    display: block;
+    image-rendering: pixelated;
+  }
+  .side {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 200px;
+  }
+  .panel {
+    background: var(--panel);
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 8px 20px rgba(120, 80, 40, 0.1);
+  }
+  .panel h2 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: #a98a72;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+    margin: 4px 0;
+  }
+  .stat b { color: var(--accent); }
+  canvas#next {
+    background: var(--board-bg);
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto;
+  }
+  button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+  }
+  button:active { transform: scale(0.96); }
+  button.secondary {
+    background: var(--carrot);
+  }
+  .overlay {
+    position: absolute;
+    inset: 14px;
+    background: rgba(255, 246, 234, 0.94);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    gap: 10px;
+  }
+  .overlay.hidden { display: none; }
+  .overlay .big { font-size: 40px; }
+  .overlay h2 { margin: 0; font-size: 20px; }
+  .overlay p { margin: 0; font-size: 13px; color: #a98a72; }
+  .controls-hint {
+    font-size: 12px;
+    color: #a98a72;
+    line-height: 1.6;
+  }
+  .touch-controls {
+    display: none;
+    width: 100%;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .touch-controls button {
+    padding: 14px 0;
+    font-size: 18px;
+  }
+  @media (max-width: 720px) {
+    .app { flex-direction: column; align-items: center; }
+    .side { width: 100%; max-width: 340px; flex-direction: row; flex-wrap: wrap; }
+    .panel { flex: 1 1 140px; }
+    .touch-controls { display: grid; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>🐰 토끼 테트리스</h1>
+  <p class="subtitle">당근을 모아 줄을 채우면 토끼들이 사라져요!</p>
+
+  <div class="board-wrap">
+    <canvas id="board" width="240" height="480"></canvas>
+    <div class="overlay" id="overlay">
+      <div class="big">🐇</div>
+      <h2 id="overlay-title">토끼 테트리스</h2>
+      <p id="overlay-text">화면을 클릭하거나 버튼을 눌러 시작하세요</p>
+      <button id="startBtn">시작하기</button>
+    </div>
+  </div>
+
+  <div class="side">
+    <div class="panel">
+      <h2>점수</h2>
+      <div class="stat"><span>점수</span><b id="score">0</b></div>
+      <div class="stat"><span>줄</span><b id="lines">0</b></div>
+      <div class="stat"><span>레벨</span><b id="level">1</b></div>
+    </div>
+    <div class="panel">
+      <h2>다음 토끼</h2>
+      <canvas id="next" width="100" height="100"></canvas>
+    </div>
+    <div class="panel">
+      <button id="pauseBtn">일시정지</button>
+      <div style="height:8px"></div>
+      <button id="restartBtn" class="secondary">다시 시작</button>
+    </div>
+    <div class="panel controls-hint">
+      ← → : 이동<br>
+      ↑ : 회전<br>
+      ↓ : 빠르게 내리기<br>
+      스페이스 : 즉시 떨어뜨리기<br>
+      P : 일시정지
+    </div>
+    <div class="touch-controls">
+      <button id="tLeft">◀</button>
+      <button id="tRotate">⟳</button>
+      <button id="tDown">▼</button>
+      <button id="tDrop">⤓</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const COLS = 10, ROWS = 20, CELL = 24;
+  const boardCanvas = document.getElementById('board');
+  const ctx = boardCanvas.getContext('2d');
+  const nextCanvas = document.getElementById('next');
+  const nctx = nextCanvas.getContext('2d');
+  const overlay = document.getElementById('overlay');
+  const overlayTitle = document.getElementById('overlay-title');
+  const overlayText = document.getElementById('overlay-text');
+  const scoreEl = document.getElementById('score');
+  const linesEl = document.getElementById('lines');
+  const levelEl = document.getElementById('level');
+
+  boardCanvas.width = COLS * CELL;
+  boardCanvas.height = ROWS * CELL;
+
+  // Rabbit-themed piece palette: each piece is a different bunny color
+  const RABBITS = [
+    { key: 'I', color: '#ffb6c1', face: '🐰' }, // pink bunny
+    { key: 'O', color: '#ffe08a', face: '🐇' }, // yellow bunny
+    { key: 'T', color: '#c9a0ff', face: '🐰' }, // purple bunny
+    { key: 'S', color: '#9be7a3', face: '🐇' }, // green bunny
+    { key: 'Z', color: '#ff9f8f', face: '🐰' }, // orange-red bunny
+    { key: 'J', color: '#8fc6ff', face: '🐇' }, // blue bunny
+    { key: 'L', color: '#ffcf8f', face: '🐰' }, // carrot-orange bunny
+  ];
+
+  const SHAPES = {
+    I: [[0,0],[1,0],[2,0],[3,0]],
+    O: [[0,0],[1,0],[0,1],[1,1]],
+    T: [[1,0],[0,1],[1,1],[2,1]],
+    S: [[1,0],[2,0],[0,1],[1,1]],
+    Z: [[0,0],[1,0],[1,1],[2,1]],
+    J: [[0,0],[0,1],[1,1],[2,1]],
+    L: [[2,0],[0,1],[1,1],[2,1]],
+  };
+
+  function rotateCells(cells) {
+    // rotate around a 4x4 box center for simplicity
+    return cells.map(([x, y]) => [y, 3 - x]);
+  }
+
+  function newPiece() {
+    const def = RABBITS[Math.floor(Math.random() * RABBITS.length)];
+    const cells = SHAPES[def.key].map(([x, y]) => [x, y]);
+    return { key: def.key, color: def.color, face: def.face, cells, x: 3, y: -1 };
+  }
+
+  let grid, current, next, score, lines, level, dropInterval, dropTimer, running, paused, gameOver, animFrame, lastTime;
+
+  function resetState() {
+    grid = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+    current = newPiece();
+    next = newPiece();
+    score = 0;
+    lines = 0;
+    level = 1;
+    dropInterval = 800;
+    dropTimer = 0;
+    running = false;
+    paused = false;
+    gameOver = false;
+    updateStats();
+  }
+
+  function updateStats() {
+    scoreEl.textContent = score;
+    linesEl.textContent = lines;
+    levelEl.textContent = level;
+  }
+
+  function cellsAbsolute(piece) {
+    return piece.cells.map(([x, y]) => [piece.x + x, piece.y + y]);
+  }
+
+  function collides(piece, offX = 0, offY = 0, cells = piece.cells) {
+    for (const [cx, cy] of cells) {
+      const x = piece.x + cx + offX;
+      const y = piece.y + cy + offY;
+      if (x < 0 || x >= COLS || y >= ROWS) return true;
+      if (y >= 0 && grid[y][x]) return true;
+    }
+    return false;
+  }
+
+  function lockPiece() {
+    for (const [x, y] of cellsAbsolute(current)) {
+      if (y < 0) {
+        triggerGameOver();
+        return;
+      }
+      grid[y][x] = { color: current.color, face: current.face };
+    }
+    clearLines();
+    current = next;
+    next = newPiece();
+    if (collides(current, 0, 0)) {
+      triggerGameOver();
+    }
+    drawNext();
+  }
+
+  function clearLines() {
+    let cleared = 0;
+    for (let y = ROWS - 1; y >= 0; y--) {
+      if (grid[y].every(c => c)) {
+        grid.splice(y, 1);
+        grid.unshift(Array(COLS).fill(null));
+        cleared++;
+        y++;
+      }
+    }
+    if (cleared > 0) {
+      const points = [0, 100, 300, 500, 800][cleared] * level;
+      score += points;
+      lines += cleared;
+      level = 1 + Math.floor(lines / 10);
+      dropInterval = Math.max(120, 800 - (level - 1) * 60);
+      updateStats();
+    }
+  }
+
+  function triggerGameOver() {
+    gameOver = true;
+    running = false;
+    overlayTitle.textContent = '토끼가 굴에 다 찼어요! 🥕';
+    overlayText.textContent = '점수: ' + score + ' — 다시 도전해보세요';
+    document.getElementById('startBtn').textContent = '다시 시작';
+    overlay.classList.remove('hidden');
+  }
+
+  function move(dx) {
+    if (!running || paused) return;
+    if (!collides(current, dx, 0)) current.x += dx;
+    draw();
+  }
+
+  function softDrop() {
+    if (!running || paused) return;
+    if (!collides(current, 0, 1)) {
+      current.y += 1;
+      score += 1;
+      updateStats();
+    } else {
+      lockPiece();
+    }
+    draw();
+  }
+
+  function hardDrop() {
+    if (!running || paused) return;
+    let dist = 0;
+    while (!collides(current, 0, dist + 1)) dist++;
+    current.y += dist;
+    score += dist * 2;
+    updateStats();
+    lockPiece();
+    draw();
+  }
+
+  function rotate() {
+    if (!running || paused) return;
+    const rotated = rotateCells(current.cells);
+    if (!collides(current, 0, 0, rotated)) {
+      current.cells = rotated;
+    } else if (!collides(current, -1, 0, rotated)) {
+      current.x -= 1;
+      current.cells = rotated;
+    } else if (!collides(current, 1, 0, rotated)) {
+      current.x += 1;
+      current.cells = rotated;
+    }
+    draw();
+  }
+
+  function drawBunnyCell(c, px, py, color, face) {
+    c.fillStyle = color;
+    c.beginPath();
+    c.roundRect(px + 1, py + 1, CELL - 2, CELL - 2, 6);
+    c.fill();
+    c.font = (CELL - 6) + 'px serif';
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    c.fillText(face, px + CELL / 2, py + CELL / 2 + 1);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, boardCanvas.width, boardCanvas.height);
+
+    // grid lines
+    ctx.strokeStyle = '#f1d9c7';
+    ctx.lineWidth = 1;
+    for (let x = 0; x <= COLS; x++) {
+      ctx.beginPath();
+      ctx.moveTo(x * CELL, 0);
+      ctx.lineTo(x * CELL, ROWS * CELL);
+      ctx.stroke();
+    }
+    for (let y = 0; y <= ROWS; y++) {
+      ctx.beginPath();
+      ctx.moveTo(0, y * CELL);
+      ctx.lineTo(COLS * CELL, y * CELL);
+      ctx.stroke();
+    }
+
+    // locked cells
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < COLS; x++) {
+        const cell = grid[y][x];
+        if (cell) drawBunnyCell(ctx, x * CELL, y * CELL, cell.color, cell.face);
+      }
+    }
+
+    // ghost piece
+    let ghostY = 0;
+    while (!collides(current, 0, ghostY + 1)) ghostY++;
+    ctx.globalAlpha = 0.25;
+    for (const [x, y] of cellsAbsolute(current)) {
+      const gy = y + ghostY;
+      if (gy >= 0) drawBunnyCell(ctx, x * CELL, gy * CELL, current.color, current.face);
+    }
+    ctx.globalAlpha = 1;
+
+    // current piece
+    for (const [x, y] of cellsAbsolute(current)) {
+      if (y >= 0) drawBunnyCell(ctx, x * CELL, y * CELL, current.color, current.face);
+    }
+  }
+
+  function drawNext() {
+    nctx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
+    const size = 20;
+    const offX = (nextCanvas.width - 4 * size) / 2;
+    const offY = (nextCanvas.height - 4 * size) / 2;
+    for (const [x, y] of next.cells) {
+      nctx.fillStyle = next.color;
+      nctx.beginPath();
+      nctx.roundRect(offX + x * size + 1, offY + y * size + 1, size - 2, size - 2, 5);
+      nctx.fill();
+      nctx.font = (size - 6) + 'px serif';
+      nctx.textAlign = 'center';
+      nctx.textBaseline = 'middle';
+      nctx.fillText(next.face, offX + x * size + size / 2, offY + y * size + size / 2 + 1);
+    }
+  }
+
+  function loop(time) {
+    if (!running) return;
+    if (!lastTime) lastTime = time;
+    const delta = time - lastTime;
+    lastTime = time;
+    if (!paused) {
+      dropTimer += delta;
+      if (dropTimer > dropInterval) {
+        dropTimer = 0;
+        if (!collides(current, 0, 1)) {
+          current.y += 1;
+        } else {
+          lockPiece();
+        }
+        draw();
+      }
+    }
+    animFrame = requestAnimationFrame(loop);
+  }
+
+  function start() {
+    resetState();
+    running = true;
+    paused = false;
+    lastTime = 0;
+    overlay.classList.add('hidden');
+    draw();
+    drawNext();
+    cancelAnimationFrame(animFrame);
+    animFrame = requestAnimationFrame(loop);
+  }
+
+  function togglePause() {
+    if (!running) return;
+    paused = !paused;
+    document.getElementById('pauseBtn').textContent = paused ? '계속하기' : '일시정지';
+    if (paused) {
+      overlayTitle.textContent = '일시정지 중 🥕';
+      overlayText.textContent = '버튼을 눌러 계속하세요';
+      document.getElementById('startBtn').textContent = '계속하기';
+      overlay.classList.remove('hidden');
+    } else {
+      overlay.classList.add('hidden');
+    }
+  }
+
+  document.getElementById('startBtn').addEventListener('click', () => {
+    if (paused && running) {
+      togglePause();
+    } else {
+      start();
+    }
+  });
+  document.getElementById('restartBtn').addEventListener('click', start);
+  document.getElementById('pauseBtn').addEventListener('click', togglePause);
+
+  document.addEventListener('keydown', (e) => {
+    switch (e.key) {
+      case 'ArrowLeft': move(-1); e.preventDefault(); break;
+      case 'ArrowRight': move(1); e.preventDefault(); break;
+      case 'ArrowDown': softDrop(); e.preventDefault(); break;
+      case 'ArrowUp': rotate(); e.preventDefault(); break;
+      case ' ': hardDrop(); e.preventDefault(); break;
+      case 'p': case 'P': togglePause(); break;
+    }
+  });
+
+  document.getElementById('tLeft').addEventListener('click', () => move(-1));
+  document.getElementById('tRotate').addEventListener('click', rotate);
+  document.getElementById('tDown').addEventListener('click', softDrop);
+  document.getElementById('tDrop').addEventListener('click', hardDrop);
+
+  resetState();
+  draw();
+  drawNext();
+})();
+</script>
+</body>
+</html>

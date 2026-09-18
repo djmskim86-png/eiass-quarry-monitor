@@ -1,0 +1,5 @@
+<resources>
+    <!-- 실제 UI는 Compose(OurLedgerTheme)가 그리므로, 이 XML 테마는
+         런처 아이콘/스플래시가 뜨기 전 시스템 배경색 정도만 담당한다. -->
+    <style name="Theme.OurLedger" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

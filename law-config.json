@@ -1,0 +1,62 @@
+{
+  "_설명": "산지관리법 모니터링 설정. API 키는 이 파일이 아니라 law-keys.json(커밋 안 됨)에 넣으세요.",
+
+  "lawQuery": "산지관리법",
+  "lawNames": ["산지관리법", "산지관리법 시행령", "산지관리법 시행규칙"],
+  "versionsPerLaw": 6,
+
+  "adminRuleKeywords": ["산지", "토석", "채석"],
+  "adminRuleAgencies": ["산림청"],
+
+  "billKeywords": ["산지관리법"],
+  "assemblyAge": "22",
+  "assemblyEndpoints": {
+    "_설명": "열린국회정보 OpenAPI 엔드포인트 이름. 오류가 나면 open.assembly.go.kr 에서 해당 API 상세페이지의 요청주소 끝부분으로 바꾸세요.",
+    "bills": "nzmimeepazxkubdpn",
+    "allBills": "ALLBILL",
+    "notices": "nknalejkafmvgzmpt"
+  },
+
+  "pageWatches": [
+    {
+      "id": "lawmaking-lmpp",
+      "name": "국민참여입법센터 - 정부 입법예고",
+      "group": "정부 입법·행정예고",
+      "enabled": true,
+      "urls": ["https://opinion.lawmaking.go.kr/gcom/ogLmPp?pageIndex={page}"],
+      "pages": 3,
+      "keywords": ["산지관리", "산지"],
+      "note": "법률·시행령·시행규칙 개정안 입법예고. 목록 페이지에서 키워드가 들어간 글을 찾습니다."
+    },
+    {
+      "id": "lawmaking-admpp",
+      "name": "국민참여입법센터 - 행정예고(고시·훈령)",
+      "group": "정부 입법·행정예고",
+      "enabled": false,
+      "urls": [],
+      "pages": 1,
+      "keywords": ["산지", "토석", "채석"],
+      "note": "행정예고 목록 주소를 브라우저에서 확인해 urls에 넣고 enabled를 true로 바꾸세요. 페이지 번호 자리는 {page}."
+    },
+    {
+      "id": "forest-notice",
+      "name": "산림청 - 입법예고/고시 게시판",
+      "group": "산림청",
+      "enabled": false,
+      "urls": [],
+      "pages": 1,
+      "keywords": ["산지", "토석", "채석"],
+      "note": "산림청 홈페이지 게시판 목록 주소를 넣고 enabled를 true로 바꾸세요."
+    },
+    {
+      "id": "gwanbo",
+      "name": "전자관보",
+      "group": "관보",
+      "enabled": false,
+      "urls": [],
+      "pages": 1,
+      "keywords": ["산지관리법"],
+      "note": "공포 사실은 국가법령정보센터(공포일자)와 국회 의안정보(공포일)로 이미 잡힙니다. 관보 목록을 직접 보려면 주소를 넣으세요."
+    }
+  ]
+}

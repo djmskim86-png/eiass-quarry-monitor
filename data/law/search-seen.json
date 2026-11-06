@@ -2,16 +2,131 @@
   "_설명": "매일 웹 검색 점검에서 이미 확인한 항목. 새 점검 때 여기 없는 것만 '새 소식'으로 보고합니다.",
   "lastCheck": "2026-11-06",
   "items": [
-    {"id": "법률 제21960호", "kind": "공포", "title": "산지관리법 일부개정 (법률 제21960호, 2026.9.22. 공포, 시행 2026.9.22./2027.3.23. 분할 추정)", "url": "https://www.law.go.kr/LSW/lsInfoP.do?lsId=009412", "firstSeen": "2026-11-06"},
-    {"id": "법률 제21406호", "kind": "공포", "title": "산지관리법 일부개정 (법률 제21406호, 2026.2.27. 공포)", "url": "https://www.law.go.kr/LSW/lsInfoP.do?lsId=009412", "firstSeen": "2026-11-06"},
-    {"id": "대통령령 제36409호", "kind": "공포", "title": "산지관리법 시행령 일부개정 (대통령령 제36409호, 2026.6.16., 시행 2026.7.1.)", "url": "https://law.go.kr/LSW/lsRvsDocListP.do?lsId=009556&chrClsCd=010202&lsRvsGubun=all", "firstSeen": "2026-11-06"},
-    {"id": "대통령령 제36587호", "kind": "공포", "title": "산지관리법 시행령 타법개정 (대통령령 제36587호, 2026.8.18., 시행 2026.9.18.)", "url": "https://law.go.kr/LSW/lsRvsDocListP.do?lsId=009556&chrClsCd=010202&lsRvsGubun=all", "firstSeen": "2026-11-06"},
-    {"id": "농림축산식품부령 제776호", "kind": "공포", "title": "산지관리법 시행규칙 일부개정 (농림축산식품부령 제776호, 2026.6.24.)", "url": "https://www.law.go.kr/LSW/lsRvsDocListP.do?lsId=009560&chrClsCd=010202&lsRvsGubun=all", "firstSeen": "2026-11-06"},
-    {"id": "기후에너지환경부령 제54호", "kind": "공포", "title": "산지관리법 시행규칙 타법개정 (기후에너지환경부령 제54호, 2026.8.27., 시행 2026.9.18.)", "url": "https://www.law.go.kr/LSW/lsRvsDocListP.do?lsId=009560&chrClsCd=010202&lsRvsGubun=all", "firstSeen": "2026-11-06"},
-    {"id": "산림청공고 제2026-335호", "kind": "행정예고", "title": "중앙산지관리위원회의 산림보호구역 지정해제 심의기준 전부개정 고시안 행정예고 (2026.7.24., 의견 마감 8.17.)", "url": "https://forest.go.kr/kfsweb/cop/bbs/selectBoardArticle.do?mn=NKFS_04_03_04&bbsId=BBSMSTR_1004&nttId=3222647", "firstSeen": "2026-11-06"},
-    {"id": "산림청공고 제2025-320호", "kind": "입법예고", "title": "산지관리법 시행령 일부개정령안 입법예고 (2025.9.18., 산촌체류형 쉼터·부수 토석채취 심의 제외 20만㎥ 미만 상향)", "url": "https://opinion.lawmaking.go.kr/gcom/ogLmPp/83832", "firstSeen": "2026-11-06"},
-    {"id": "산림청공고 제2025-321호", "kind": "입법예고", "title": "산지관리법 시행규칙 일부개정령안 입법예고 (2025.9.18., 토석채취 복구비 분할예치 5년·5회)", "url": "https://opinion.lawmaking.go.kr/gcom/ogLmPp/83830", "firstSeen": "2026-11-06"},
-    {"id": "의안 2200401", "kind": "국회 법률안", "title": "산지관리법 일부개정법률안 (김선교 의원 대표발의, 22대) — 최형두 의원안과 통합한 위원회 대안 있음", "url": "https://likms.assembly.go.kr/bill/bi/main/mainPage.do", "firstSeen": "2026-11-06"},
-    {"id": "의안 2121208", "kind": "국회 법률안", "title": "산지관리법 일부개정법률안 (장철민 의원 대표발의, 21대)", "url": "https://likms.assembly.go.kr/bill/bi/main/mainPage.do", "firstSeen": "2026-11-06"}
+    {
+      "id": "법률 제21960호",
+      "kind": "공포",
+      "title": "산지관리법 일부개정 (법률 제21960호, 2026.9.22. 공포, 시행 2026.9.22./2027.3.23. 분할 추정)",
+      "url": "https://www.law.go.kr/LSW/lsInfoP.do?lsId=009412",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "법률 제21406호",
+      "kind": "공포",
+      "title": "산지관리법 일부개정 (법률 제21406호, 2026.2.27. 공포)",
+      "url": "https://www.law.go.kr/LSW/lsInfoP.do?lsId=009412",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "대통령령 제36409호",
+      "kind": "공포",
+      "title": "산지관리법 시행령 일부개정 (대통령령 제36409호, 2026.6.16., 시행 2026.7.1.)",
+      "url": "https://law.go.kr/LSW/lsRvsDocListP.do?lsId=009556&chrClsCd=010202&lsRvsGubun=all",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "대통령령 제36587호",
+      "kind": "공포",
+      "title": "산지관리법 시행령 타법개정 (대통령령 제36587호, 2026.8.18., 시행 2026.9.18.)",
+      "url": "https://law.go.kr/LSW/lsRvsDocListP.do?lsId=009556&chrClsCd=010202&lsRvsGubun=all",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "농림축산식품부령 제776호",
+      "kind": "공포",
+      "title": "산지관리법 시행규칙 일부개정 (농림축산식품부령 제776호, 2026.6.24.)",
+      "url": "https://www.law.go.kr/LSW/lsRvsDocListP.do?lsId=009560&chrClsCd=010202&lsRvsGubun=all",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "기후에너지환경부령 제54호",
+      "kind": "공포",
+      "title": "산지관리법 시행규칙 타법개정 (기후에너지환경부령 제54호, 2026.8.27., 시행 2026.9.18.)",
+      "url": "https://www.law.go.kr/LSW/lsRvsDocListP.do?lsId=009560&chrClsCd=010202&lsRvsGubun=all",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "산림청공고 제2026-335호",
+      "kind": "행정예고",
+      "title": "중앙산지관리위원회의 산림보호구역 지정해제 심의기준 전부개정 고시안 행정예고 (2026.7.24., 의견 마감 8.17.)",
+      "url": "https://forest.go.kr/kfsweb/cop/bbs/selectBoardArticle.do?mn=NKFS_04_03_04&bbsId=BBSMSTR_1004&nttId=3222647",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "산림청공고 제2025-320호",
+      "kind": "입법예고",
+      "title": "산지관리법 시행령 일부개정령안 입법예고 (2025.9.18., 산촌체류형 쉼터·부수 토석채취 심의 제외 20만㎥ 미만 상향)",
+      "url": "https://opinion.lawmaking.go.kr/gcom/ogLmPp/83832",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "산림청공고 제2025-321호",
+      "kind": "입법예고",
+      "title": "산지관리법 시행규칙 일부개정령안 입법예고 (2025.9.18., 토석채취 복구비 분할예치 5년·5회)",
+      "url": "https://opinion.lawmaking.go.kr/gcom/ogLmPp/83830",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "의안 2200401",
+      "kind": "국회 법률안",
+      "title": "산지관리법 일부개정법률안 (김선교 의원 대표발의, 22대) — 최형두 의원안과 통합한 위원회 대안 있음",
+      "url": "https://likms.assembly.go.kr/bill/bi/main/mainPage.do",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "의안 2121208",
+      "kind": "국회 법률안",
+      "title": "산지관리법 일부개정법률안 (장철민 의원 대표발의, 21대)",
+      "url": "https://likms.assembly.go.kr/bill/bi/main/mainPage.do",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "산림청고시 제2026-114호",
+      "kind": "고시",
+      "title": "준보전산지를 보전(임업용)산지로 지정 (산림청 고시 제2026-114호, 2026.10.2.)",
+      "url": "https://eum.go.kr/web/gs/gv/gvGosiDet.jsp?seq=642223",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "산림청고시 제2026-115호",
+      "kind": "고시",
+      "title": "보전산지 변경지정 (산림청 고시 제2026-115호, 2026.10.2.)",
+      "url": "",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "산림청고시 제2026-116호",
+      "kind": "고시",
+      "title": "보전산지 지정해제 (산림청 고시 제2026-116호, 2026.10.2.)",
+      "url": "",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "의안 2205742",
+      "kind": "국회 법률안",
+      "title": "산지관리법 일부개정법률안 (김선교 의원)",
+      "url": "https://dl.nanet.go.kr/detail/PROC2026N054239",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "의안 2207120",
+      "kind": "국회 법률안",
+      "title": "산지관리법 일부개정법률안 (윤영석 의원)",
+      "url": "https://dl.nanet.go.kr/detail/PROC2026N054239",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "의안 2209919",
+      "kind": "국회 법률안",
+      "title": "산지관리법 일부개정법률안 (정희용 의원)",
+      "url": "https://dl.nanet.go.kr/detail/PROC2026N054239",
+      "firstSeen": "2026-11-06"
+    },
+    {
+      "id": "의안 2215249",
+      "kind": "국회 법률안",
+      "title": "산지관리법 일부개정법률안 (최형두 의원)",
+      "url": "https://dl.nanet.go.kr/detail/PROC2026N054239",
+      "firstSeen": "2026-11-06"
+    }
   ]
 }

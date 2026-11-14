@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>산지관리법 모니터링</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #f5f6f4; --card: #ffffff; --border: #e2e5e0; --text: #1f2421; --sub: #6b7268;
+    --accent: #4a7c59; --accent-dark: #34573e; --new: #d97706; --changed: #2563eb; --danger: #b91c1c;
+    --add-bg: #e6f4ea; --add-fg: #1e5e2f; --del-bg: #fde8e8; --del-fg: #9b1c1c; --head: #eef1ec;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161a17; --card: #1f2420; --border: #333a35; --text: #e5e9e4; --sub: #9aa397;
+      --accent: #7fb08d; --accent-dark: #9fcbaa; --new: #f0a43a; --changed: #6b9cf5; --danger: #f07070;
+      --add-bg: #1d3524; --add-fg: #a6dfb3; --del-bg: #3d1f1f; --del-fg: #f3a9a9; --head: #262c27;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Segoe UI", sans-serif; background: var(--bg); color: var(--text); padding: 24px 16px 60px; }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  .nav { font-size: 13px; margin-bottom: 14px; }
+  .nav a { color: var(--accent-dark); }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 17px; margin: 30px 0 10px; }
+  .subtitle { color: var(--sub); font-size: 13px; margin-bottom: 18px; }
+  .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; min-width: 130px; }
+  .stat-card .num { font-size: 22px; font-weight: 700; }
+  .stat-card .lbl { font-size: 12px; color: var(--sub); margin-top: 2px; }
+  .stat-card.new .num { color: var(--new); }
+  .stat-card.warn .num { color: var(--danger); }
+  .alert { background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--new); border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 10px; line-height: 1.6; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 18px 0 4px; }
+  .tab { border: 1px solid var(--border); background: var(--card); color: var(--text); border-radius: 999px; padding: 6px 14px; font-size: 13px; cursor: pointer; }
+  .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .tab .cnt { font-size: 11px; opacity: .8; margin-left: 4px; }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 10px 0; }
+  .controls input, .controls select { padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: var(--card); color: var(--text); }
+  .controls input { flex: 1; min-width: 160px; }
+  .tbl-wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { text-align: left; font-size: 12px; color: var(--sub); background: var(--head); padding: 9px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  a.lnk { color: var(--accent-dark); text-decoration: none; font-weight: 500; }
+  a.lnk:hover { text-decoration: underline; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 700; white-space: nowrap; }
+  .b-new { background: #fef3c7; color: #92400e; }
+  .b-chg { background: #dbeafe; color: #1e40af; }
+  .b-gone { background: #e5e7eb; color: #374151; }
+  .b-art { background: #ede9fe; color: #5b21b6; }
+  .b-ok { background: #e6f4ea; color: #1e5e2f; }
+  .b-err { background: #fde8e8; color: #9b1c1c; }
+  .b-off { background: #e5e7eb; color: #4b5563; }
+  .b-plan { background: #fef3c7; color: #92400e; }
+  .muted { color: var(--sub); font-size: 12px; }
+  .empty { text-align: center; padding: 30px; color: var(--sub); font-size: 13px; }
+  details.diff { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; }
+  details.diff > summary { cursor: pointer; padding: 12px 14px; font-size: 14px; list-style: none; }
+  details.diff > summary::-webkit-details-marker { display: none; }
+  details.diff > summary::before { content: "▸ "; color: var(--sub); }
+  details.diff[open] > summary::before { content: "▾ "; }
+  .art { border-top: 1px solid var(--border); padding: 12px 14px; }
+  .art-head { font-size: 13px; font-weight: 700; margin-bottom: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 720px) { .cmp { grid-template-columns: 1fr; } }
+  .cmp .col { font-size: 13px; line-height: 1.7; white-space: pre-wrap; word-break: break-all; background: var(--bg); border-radius: 6px; padding: 8px 10px; }
+  .cmp .lbl { font-size: 11px; color: var(--sub); margin-bottom: 4px; font-weight: 700; }
+  ins { background: var(--add-bg); color: var(--add-fg); text-decoration: none; border-radius: 3px; }
+  del { background: var(--del-bg); color: var(--del-fg); border-radius: 3px; }
+  .footer-note { margin-top: 24px; font-size: 12px; color: var(--sub); line-height: 1.7; }
+  .footer-note code { background: var(--head); padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a href="index.html">← 채석단지·토석채취 사업 모니터링</a></div>
+  <h1>산지관리법 개정 모니터링</h1>
+  <div class="subtitle">산지관리법 · 시행령 · 시행규칙 · 관련 고시, 국회 법률안, 입법예고 · 마지막 갱신: <span id="fetchedAt"></span></div>
+
+  <div id="alerts"></div>
+  <div class="stats" id="stats"></div>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="panel"></div>
+
+  <div class="footer-note">
+    이 페이지는 로컬 스크립트(<code>law-fetch.ps1</code>)가 만든 정적 파일입니다. 다시 수집하려면 <code>law-run.bat</code>을 실행하세요.<br>
+    처음 수집한 출처는 기준선으로만 저장합니다. 그다음 실행부터 신규·변경·사라짐을 이벤트로 기록합니다.<br>
+    조문 비교는 국가법령정보센터의 시행일별 본문을 직전 시행본과 조문 단위로 비교한 결과입니다. 공식 신·구조문 대비표는 각 항목의 링크에서 확인하세요.
+  </div>
+</div>
+
+<script>
+const DATA = /*__DATA_JSON__*/null;
+
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const arr = v => Array.isArray(v) ? v : (v == null ? [] : [v]);
+const sources = arr(DATA.sources);
+const events = arr(DATA.events);
+const diffs = arr(DATA.diffs);
+const src = id => sources.find(s => s.id === id);
+const fmt = s => /^\d{8}$/.test(s || '') ? `${s.slice(0,4)}.${s.slice(4,6)}.${s.slice(6)}` : (s || '');
+
+function typeBadge(t) {
+  const cls = t === '신규' ? 'b-new' : t === '변경' ? 'b-chg' : t === '조문 변경' ? 'b-art' : 'b-gone';
+  return `<span class="badge ${cls}">${esc(t)}</span>`;
+}
+function link(url, text) {
+  return url ? `<a class="lnk" href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
+}
+
+// ---------------- 상단 요약
+document.getElementById('fetchedAt').textContent = DATA.fetchedAt || '-';
+const enabled = sources.filter(s => s.enabled);
+const failed = enabled.filter(s => !s.ok);
+const planned = arr((src('law-versions') || {}).items).filter(i => (i.cols || {})['상태'] === '시행예정');
+const statCards = [
+  ['new', DATA.newEventCount || 0, '이번 실행 새 변경'],
+  ['', events.length, '누적 변경 이벤트'],
+  ['', planned.length, '시행예정 개정'],
+  [failed.length ? 'warn' : '', `${enabled.length - failed.length}/${enabled.length}`, '정상 수집 출처'],
+];
+document.getElementById('stats').innerHTML = statCards.map(([c, n, l]) => `<div class="stat-card ${c}"><div class="num">${esc(n)}</div><div class="lbl">${esc(l)}</div></div>`).join('');
+
+const alerts = [];
+if (!DATA.keys || !DATA.keys.lawOC) alerts.push('국가법령정보 <b>OC</b>가 설정되지 않아 법령·행정규칙·조문 비교를 수집하지 못했습니다. <code>law-keys.json</code>에 <code>lawOC</code>를 넣어 주세요 (open.law.go.kr 무료 신청).');
+if (!DATA.keys || !DATA.keys.assembly) alerts.push('열린국회정보 <b>인증키</b>가 설정되지 않아 국회 법률안·입법예고를 수집하지 못했습니다. <code>law-keys.json</code>에 <code>assemblyKey</code>를 넣어 주세요 (open.assembly.go.kr 무료 발급).');
+if (planned.length) alerts.push(`<b>시행 예정인 개정이 ${planned.length}건 있습니다:</b> ` + planned.map(p => `${esc(p.cols['법령'])} (시행 ${esc(p.cols['시행일자'])})`).join(', '));
+if (failed.length) alerts.push(`수집에 실패한 출처가 ${failed.length}곳 있습니다. '수집 상태' 탭에서 원인을 확인하세요.`);
+document.getElementById('alerts').innerHTML = alerts.map(a => `<div class="alert">${a}</div>`).join('');
+
+// ---------------- 탭
+const TABS = [
+  { id: 'events', label: '변경 이벤트', count: () => events.length, render: renderEvents },
+  { id: 'laws', label: '법령 현황', count: () => arr((src('law-current') || {}).items).length, render: renderLaws },
+  { id: 'diffs', label: '조문 변경 내역', count: () => diffs.length, render: renderDiffs },
+  { id: 'bills', label: '국회 법률안', count: () => arr((src('na-allbills') || {}).items).length + arr((src('na-bills') || {}).items).length, render: () => renderSources(['na-allbills', 'na-bills']) },
+  { id: 'notices', label: '입법·행정예고', count: () => sources.filter(s => s.id === 'na-notices' || /^(lawmaking|forest|gwanbo)/.test(s.id) || (s.group || '').includes('예고')).reduce((n, s) => n + arr(s.items).length, 0),
+    render: () => renderSources(['na-notices', ...sources.filter(s => !['law-current','law-versions','law-admrul','na-bills','na-allbills','na-notices'].includes(s.id)).map(s => s.id)]) },
+  { id: 'admrul', label: '행정규칙(고시·훈령)', count: () => arr((src('law-admrul') || {}).items).length, render: () => renderSources(['law-admrul']) },
+  { id: 'status', label: '수집 상태', count: () => failed.length ? `!${failed.length}` : '', render: renderStatus },
+];
+let current = 'events';
+try { current = localStorage.getItem('lawmon-tab') || 'events'; } catch (e) {}
+if (!TABS.find(t => t.id === current)) current = 'events';
+
+function drawTabs() {
+  document.getElementById('tabs').innerHTML = TABS.map(t => `<button class="tab ${t.id === current ? 'active' : ''}" data-id="${t.id}">${esc(t.label)}<span class="cnt">${esc(t.count())}</span></button>`).join('');
+  document.querySelectorAll('.tab').forEach(b => b.onclick = () => { current = b.dataset.id; try { localStorage.setItem('lawmon-tab', current); } catch (e) {} drawTabs(); });
+  TABS.find(t => t.id === current).render(document.getElementById('panel'));
+}
+
+// ---------------- 변경 이벤트
+function renderEvents(el) {
+  const groups = Array.from(new Set(events.map(e => e.group).filter(Boolean)));
+  el.innerHTML = `
+    <div class="controls">
+      <input id="evQ" placeholder="검색 (법령명, 의안명, 내용)">
+      <select id="evG"><option value="">전체 분야</option>${groups.map(g => `<option>${esc(g)}</option>`).join('')}</select>
+      <select id="evT"><option value="">전체 유형</option><option>신규</option><option>변경</option><option>조문 변경</option><option>목록에서 사라짐</option></select>
+    </div>
+    <div class="tbl-wrap"><table><thead><tr><th>감지 시각</th><th>유형</th><th>분야</th><th>내용</th></tr></thead><tbody id="evBody"></tbody></table>
+    <div class="empty" id="evEmpty" style="display:none"></div></div>`;
+  const draw = () => {
+    const q = document.getElementById('evQ').value.trim().toLowerCase();
+    const g = document.getElementById('evG').value, t = document.getElementById('evT').value;
+    const list = events.filter(e => (!g || e.group === g) && (!t || e.type === t) && (!q || `${e.title} ${e.detail} ${e.source}`.toLowerCase().includes(q)));
+    document.getElementById('evBody').innerHTML = list.map(e => `<tr>
+      <td class="muted" style="white-space:nowrap">${esc(e.at)}</td><td>${typeBadge(e.type)}</td>
+      <td class="muted">${esc(e.source)}</td>
+      <td>${link(e.url, e.title)}<div class="muted">${esc(e.detail)}</div></td></tr>`).join('');
+    const empty = document.getElementById('evEmpty');
+    empty.style.display = list.length ? 'none' : 'block';
+    empty.textContent = events.length ? '조건에 맞는 이벤트가 없습니다.' : '아직 감지된 변경이 없습니다. 첫 실행은 기준선만 저장하고, 다음 실행부터 변경을 기록합니다.';
+  };
+  ['evQ', 'evG', 'evT'].forEach(id => document.getElementById(id).addEventListener('input', draw));
+  draw();
+}
+
+// ---------------- 법령 현황
+function renderLaws(el) {
+  let html = '<h2 style="margin-top:12px">현행 법령</h2>' + itemTable(src('law-current'));
+  html += '<h2>시행일별 버전 (최신순)</h2>' + itemTable(src('law-versions'), it => (it.cols || {})['상태'] === '시행예정' ? '<span class="badge b-plan">시행예정</span> ' : '');
+  el.innerHTML = html;
+}
+
+// ---------------- 조문 변경 내역
+function tokenize(s) { return (s || '').match(/\s+|[^\s]+/g) || []; }
+function wordDiff(a, b) {
+  const x = tokenize(a), y = tokenize(b);
+  if (x.length * y.length > 2500000) return [`<del>${esc(a)}</del>`, `<ins>${esc(b)}</ins>`];
+  const n = x.length, m = y.length, dp = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) dp[i][j] = x[i] === y[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  let i = 0, j = 0, L = '', R = '';
+  while (i < n && j < m) {
+    if (x[i] === y[j]) { L += esc(x[i]); R += esc(y[j]); i++; j++; }
+    else if (dp[i + 1][j] >= dp[i][j + 1]) { L += `<del>${esc(x[i++])}</del>`; }
+    else { R += `<ins>${esc(y[j++])}</ins>`; }
+  }
+  while (i < n) L += `<del>${esc(x[i++])}</del>`;
+  while (j < m) R += `<ins>${esc(y[j++])}</ins>`;
+  return [L, R];
+}
+function renderDiffs(el) {
+  if (!diffs.length) {
+    el.innerHTML = `<div class="empty">조문 비교 결과가 없습니다. ${DATA.diffError ? '오류: ' + esc(DATA.diffError) : '국가법령정보 OC를 설정한 뒤 다시 실행하세요.'}</div>`;
+    return;
+  }
+  el.innerHTML = diffs.map((d, idx) => {
+    const ch = arr(d.changes);
+    const cnt = t => ch.filter(c => c.type === t).length;
+    const statusBadge = d.toStatus === '시행예정' ? '<span class="badge b-plan">시행예정</span>' : `<span class="badge b-off">${esc(d.toStatus)}</span>`;
+    return `<details class="diff" ${idx === 0 ? 'open' : ''}>
+      <summary>${statusBadge} <b>${esc(d.lawName)}</b> — 시행 ${esc(fmt(d.toEfYd))} ${d.kind ? '(' + esc(d.kind) + ')' : ''}
+        <span class="muted"> · 신설 ${cnt('신설')} · 개정 ${cnt('개정')} · 삭제 ${cnt('삭제')} · 비교 대상: 시행 ${esc(fmt(d.fromEfYd))}본</span></summary>
+      <div class="art muted">공포 ${esc(d.toPromDt)} · ${link(d.toUrl, '새 버전 원문')} · ${link(d.fromUrl, '이전 버전 원문')}</div>
+      ${ch.length ? '' : '<div class="art muted">조문 본문 차이가 없습니다 (부칙·별표만 바뀌었을 수 있습니다).</div>'}
+      ${ch.map(c => {
+        const [L, R] = c.type === '개정' ? wordDiff(c.oldText, c.newText) : [esc(c.oldText), esc(c.newText)];
+        const b = c.type === '신설' ? 'b-new' : c.type === '삭제' ? 'b-err' : 'b-chg';
+        return `<div class="art"><div class="art-head"><span class="badge ${b}">${esc(c.type)}</span>${esc(c.key)}${c.title ? '(' + esc(c.title) + ')' : ''}</div>
+          <div class="cmp"><div class="col"><div class="lbl">이전</div>${L || '<span class="muted">(없음)</span>'}</div>
+          <div class="col"><div class="lbl">변경 후</div>${R || '<span class="muted">(없음)</span>'}</div></div></div>`;
+      }).join('')}
+    </details>`;
+  }).join('');
+}
+
+// ---------------- 공통 표
+function itemTable(s, prefix) {
+  if (!s) return '<div class="empty">출처 없음</div>';
+  const items = arr(s.items);
+  const head = s.ok ? '' : `<div class="alert">${esc(s.name)}: ${esc(s.error)}${items.length ? ' (이전 수집 결과를 표시합니다)' : ''}</div>`;
+  if (!items.length) return head + `<div class="tbl-wrap"><div class="empty">${s.enabled ? '해당 항목이 없습니다.' : esc(s.note || '사용 안 함')}</div></div>`;
+  const cols = Array.from(new Set(items.flatMap(i => Object.keys(i.cols || {}))));
+  return head + `<div class="tbl-wrap"><table><thead><tr><th>제목</th>${cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>
+    ${items.map(i => `<tr><td>${prefix ? prefix(i) : ''}${link(i.url, i.title)}</td>${cols.map(c => `<td>${esc((i.cols || {})[c])}</td>`).join('')}</tr>`).join('')}
+  </tbody></table></div>`;
+}
+function renderSources(ids) {
+  document.getElementById('panel').innerHTML = ids.map(id => src(id)).filter(Boolean)
+    .map(s => `<h2>${esc(s.name)} <span class="muted">${arr(s.items).length}건</span></h2>` + itemTable(s)).join('');
+}
+
+// ---------------- 수집 상태
+function renderStatus(el) {
+  el.innerHTML = `<div class="tbl-wrap"><table><thead><tr><th>출처</th><th>상태</th><th>건수</th><th>마지막 성공</th><th>메시지</th></tr></thead><tbody>
+    ${sources.map(s => {
+      const b = !s.enabled ? '<span class="badge b-off">사용 안 함</span>' : s.ok ? '<span class="badge b-ok">정상</span>' : '<span class="badge b-err">실패</span>';
+      const msg = [s.error, s.warning, s.baseline ? '첫 수집: 기준선으로 저장' : '', !s.enabled ? s.note : ''].filter(Boolean).join(' / ');
+      return `<tr><td>${esc(s.name)}<div class="muted">${esc(s.group)}</div></td><td>${b}</td><td>${arr(s.items).length}</td><td class="muted">${esc(s.lastSuccessAt || '-')}</td><td class="muted">${esc(msg)}</td></tr>`;
+    }).join('')}
+  </tbody></table></div>`;
+}
+
+drawTabs();
+</script>
+</body>
+</html>

@@ -12,8 +12,12 @@ Set-Location $root
 Write-Host "1) 최신 데이터 수집 중..."
 & "$root\fetch.ps1" -NoOpen
 
-Write-Host "2) 변경 사항 확인 중..."
+Write-Host "2) 산지관리법 모니터링 수집 중..."
+try { & "$root\law-fetch.ps1" -NoOpen } catch { Write-Host "산지관리법 수집 중 오류(건너뜀): $($_.Exception.Message)" }
+
+Write-Host "3) 변경 사항 확인 중..."
 git add data/latest.json data/new_log.json site/index.html
+if (Test-Path "$root\site\law.html") { git add data/law/state.json data/law/events.json data/law/diffs.json site/law.html site/law-template.html }
 
 $hasChanges = $true
 git diff --cached --quiet
@@ -26,6 +30,11 @@ if (-not $hasChanges) {
 
 $data = Get-Content (Join-Path $root "data\latest.json") -Raw -Encoding UTF8 | ConvertFrom-Json
 $msg = "데이터 갱신: 전체 $($data.totalCount)건 / 신규 $($data.newCount)건 / 상태변경 $($data.changedCount)건"
+if (Test-Path (Join-Path $root "data\law\events.json")) {
+    $lawEvents = @((Get-Content (Join-Path $root "data\law\events.json") -Raw -Encoding UTF8 | ConvertFrom-Json).items)
+    $todayEvents = @($lawEvents | Where-Object { $_.at -like ((Get-Date -Format "yyyy-MM-dd") + "*") }).Count
+    $msg += " / 산지관리법 오늘 변경 $todayEvents건"
+}
 
 git commit -m $msg
 git push

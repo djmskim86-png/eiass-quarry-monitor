@@ -1,0 +1,5 @@
+{
+  "_설명": "이 파일을 law-keys.json 으로 복사한 뒤 값을 채우세요. law-keys.json 은 git에 올라가지 않습니다.",
+  "lawOC": "open.law.go.kr 에서 신청한 OC 값 (가입 이메일의 @ 앞부분)",
+  "assemblyKey": "open.assembly.go.kr 에서 발급받은 인증키"
+}
